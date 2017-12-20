@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-
+@author: pranavburugula
 """
 
 import wfdb
@@ -33,6 +33,8 @@ def calculateLineLength(filename):
         except ValueError:
             print("ValueError occurred for fieBasename ", fileBasename)
             return
+        print (fields['signame'])
+#        return
         numChannels = len(fields['signame'])
         numSamples = fields['fs'] * 3600
         # fields['fs'] contains the frequency
@@ -44,9 +46,16 @@ def calculateLineLength(filename):
 #            allChannelsDF = allChannelsDF.add(other = sig[i, :])
         print (allChannelsDF.head())
         
-        for i in range(10):
-            llDf = llDf.append(allChannelsDF.iloc[i] - allChannelsDF.iloc[i+1], 
-                               ignore_index=True)
+        for i in range(1000):
+            if (i > numSamplesPerEpoch):
+                row = allChannelsDF.iloc[i-1] - allChannelsDF.iloc[i]
+                for j in range(2, numSamplesPerEpoch):
+                    row = row + (allChannelsDF.iloc[i-j] - allChannelsDF.iloc[i-j+1])
+#                llDf = llDf.append(allChannelsDF.iloc[i] - allChannelsDF.iloc[i+1], 
+#                                   ignore_index=True)
+                llDf = llDf.append(row, ignore_index=True)
+                
+        print ("Printing Line Length Data frame")
         print (llDf.head())
     return
 
